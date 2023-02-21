@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, People, Planet, Favorites
 #from models import Person
 
 app = Flask(__name__)
@@ -49,3 +49,44 @@ def handle_hello():
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
+
+@app.route('/people', methods=['GET'])
+def get_people():
+    people = People.query.all()
+    list_people = list(map(lambda person : person.serialize(), people))
+    print(list_people)
+    response_body = {
+        "msg": "Hello from people",
+        "list_people":list_people
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/people/<int:people_id>',methods=['GET'])
+def get_person(people_id):
+    person = People.query.filter_by(id=people_id).first()
+    print(person.serialize())
+  
+
+    return jsonify(person.serialize()), 200
+
+@app.route('/planet', methods=['GET'])
+def get_planet():
+    planet = Planet.query.all()
+    list_planet = list(map(lambda planeta : planeta.serialize(), planet))
+    print(list_planet)
+    response_body = {
+        "msg": "Hello from people",
+        "list_planet":list_planet
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/planet/<int:planet_id>',methods=['GET'])
+def get_planeta(planet_id):
+    planeta = Planet.query.filter_by(id=planet_id).first()
+    print(planet.serialize())
+  
+
+    return jsonify(planet.serialize()), 200
+  
