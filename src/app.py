@@ -58,6 +58,14 @@ def get_usuario(user_id):
 
 
 
+@app.route('/user/<int:user_id>/favorites',methods=['GET'])
+def get_favorites_user(user_id):
+    favorites_user = favorites.query.filter_by(user_id=user_id).all()
+    print(favorites_user.serialize())
+  
+
+    return jsonify(favorites_user.serialize()), 200
+
 @app.route('/favorites/<int:favorites_id>', methods=['GET'])
 def get_favorito(favorites_id):
    favorito = Favorites.query.filter_by(id=favorites_id).first()
