@@ -57,31 +57,30 @@ def get_usuario(user_id):
     return jsonify(usuario.serialize()), 200
 
 
-#@app.route('/favorites', methods=['GET'])
-#def handle_hello():
-#    favorites = Favorites.query.all()
-#    list_favorites = list(map(lambda favorito : favorito.serialize(), favorites))
-#    print(list_favorites)
-#    response_body = {
-#        "msg": "Hello, this is your GET /favorites response ",
-#        "list_favorites":list_favorites
-#    }
 
-#    return jsonify(response_body), 200
+@app.route('/favorites/<int:favorites_id>', methods=['GET'])
+def get_favorito(favorites_id):
+   favorito = Favorites.query.filter_by(id=favorites_id).first()
+   print(favorito.serialize())
+  
+   if favorito is None:
+    response_body = {"msg": "No hay favoritos"}
+    return jsonify(response_body), 404
+    
+   return jsonify(favorito.serialize()), 200
 
-#@app.route('/favorites/<int:favorites_id>',methods=['GET'])
-#def get_favorito(favorites_id):
-#    favorito = Favorites.query.filter_by(id=favorites_id).first()
-#    print(favorito.serialize())
+@app.route('/favorites/<int:favorites_id>',methods=['GET'])
+def get_favorito(favorites_id):
+    favorito = Favorites.query.filter_by(id=favorites_id).first()
+    print(favorito.serialize())
   
 
-#    return jsonify(favorito.serialize()), 200
+    return jsonify(favorito.serialize()), 200
+
 
 
 # this only runs if `$ python src/app.py` is executed
-if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+
 
 @app.route('/people', methods=['GET'])
 def get_people():
@@ -123,3 +122,7 @@ def get_planeta(planet_id):
 
     return jsonify(planeta.serialize()), 200
   
+
+if __name__ == '__main__':
+    PORT = int(os.environ.get('PORT', 3000))
+    app.run(host='0.0.0.0', port=PORT, debug=False)
