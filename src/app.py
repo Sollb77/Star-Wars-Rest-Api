@@ -38,12 +38,45 @@ def sitemap():
 
 @app.route('/user', methods=['GET'])
 def handle_hello():
-
+    user = User.query.all()
+    list_user = list(map(lambda usuario : usuario.serialize(), user))
+    print(list_user)
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "msg": "Hello, this is your GET /user response ",
+        "list_user":list_user
     }
 
     return jsonify(response_body), 200
+
+@app.route('/user/<int:user_id>',methods=['GET'])
+def get_usuario(user_id):
+    usuario = User.query.filter_by(id=user_id).first()
+    print(usuario.serialize())
+  
+
+    return jsonify(usuario.serialize()), 200
+
+
+#@app.route('/favorites', methods=['GET'])
+#def handle_hello():
+#    favorites = Favorites.query.all()
+#    list_favorites = list(map(lambda favorito : favorito.serialize(), favorites))
+#    print(list_favorites)
+#    response_body = {
+#        "msg": "Hello, this is your GET /favorites response ",
+#        "list_favorites":list_favorites
+#    }
+
+#    return jsonify(response_body), 200
+
+#@app.route('/favorites/<int:favorites_id>',methods=['GET'])
+#def get_favorito(favorites_id):
+#    favorito = Favorites.query.filter_by(id=favorites_id).first()
+#    print(favorito.serialize())
+  
+
+#    return jsonify(favorito.serialize()), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
@@ -85,8 +118,8 @@ def get_planet():
 @app.route('/planet/<int:planet_id>',methods=['GET'])
 def get_planeta(planet_id):
     planeta = Planet.query.filter_by(id=planet_id).first()
-    print(planet.serialize())
+    print(planeta.serialize())
   
 
-    return jsonify(planet.serialize()), 200
+    return jsonify(planeta.serialize()), 200
   
