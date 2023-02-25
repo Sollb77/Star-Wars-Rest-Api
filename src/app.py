@@ -9,10 +9,46 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, People, Planet, Favorites
-#from models import Person
+
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+# Setup the Flask-JWT-Extended extension
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+#from models import Person
+
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    user=User.query.filter_by(email=email).first()
+    if user is None: 
+        return jsonify({"msg":"No existe el usuario"})
+    if email != user.email or password != user.password:
+        return jsonify({"msg": "Bad username or password"}), 401
+
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token)
+
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
+
+
+if __name__ == "__main__":
+    app.run()
+
 
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -78,7 +114,7 @@ def get_favorito(favorites_id):
    return jsonify(favorito.serialize()), 200
 
 @app.route('/favorites/<int:favorites_id>',methods=['GET'])
-def get_favorito(favorites_id):
+def get_favoritos(favorites_id):
     favorito = Favorites.query.filter_by(id=favorites_id).first()
     print(favorito.serialize())
   
