@@ -121,6 +121,16 @@ def get_favoritos(favorites_id):
 
     return jsonify(favorito.serialize()), 200
 
+@app.route('/favorites_planet/<int:planet_id>/<int:user_id>',methods=['POST'])
+def add_favorites_planet(planet_id,user_id):
+    planet_query = Planet.query.get(planet_id)
+    favorites_planet = Favorites(user_id=int(user_id), planet_id=int(planet_id))
+    db.session.add(favorites_planet)
+    db.session.commit()
+    response_body = {"msg": "Planeta agregado a favoritos correctamente"}
+    
+    return jsonify(response_body), 200
+
 
 
 # this only runs if `$ python src/app.py` is executed
