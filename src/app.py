@@ -20,6 +20,22 @@ from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+
+if __name__ == "__main__":
+    app.run()
+
+db_url = os.getenv("DATABASE_URL")
+if db_url is not None:
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+MIGRATE = Migrate(app, db)
+db.init_app(app)
+CORS(app)
+setup_admin(app)
+
 # Setup the Flask-JWT-Extended extension
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
@@ -48,21 +64,6 @@ def protected():
     return jsonify(logged_in_as=current_user), 200
 
 
-if __name__ == "__main__":
-    app.run()
-
-
-db_url = os.getenv("DATABASE_URL")
-if db_url is not None:
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-MIGRATE = Migrate(app, db)
-db.init_app(app)
-CORS(app)
-setup_admin(app)
 
 # Handle/serialize errors like a JSON object
 
@@ -92,9 +93,10 @@ def handle_hello():
 @app.route('/user/<int:user_id>',methods=['GET'])
 def get_usuario(user_id):
     usuario = User.query.filter_by(id=user_id).first()
-    print(usuario.serialize())
-  
-
+ #   print(usuario.serialize())
+    if usuario is None: 
+        response_body = {"msg": "No hay Usuario"}
+        return response_body, 404
     return jsonify(usuario.serialize()), 200
 
 #[GET]/user/favorites
@@ -112,11 +114,11 @@ def get_favorites_user(user_id):
 @app.route('/favorites/<int:favorites_id>', methods=['GET'])
 def get_favorito(favorites_id):
    favorito = Favorites.query.filter_by(id=favorites_id).first()
-   print(favorito.serialize())
+   #print(favorito.serialize())
   
-   if favorito is None:
-    response_body = {"msg": "No hay favoritos"}
-    return jsonify(response_body), 404
+  # if favorito is None:
+  #  response_body = {"msg": "No hay favoritos"}
+  #  return jsonify(response_body), 404
     
    return jsonify(favorito.serialize()), 200
 
@@ -199,10 +201,10 @@ def get_planeta(planet_id):
 
 @app.route('/favorites_planet/<int:planet_id>/<int:user_id>',methods=['DELETE'])
 def remove_favorites_planet(planet_id,user_id):
-    planet_query = Planet.query.delete(planet_id)
+    #planet_query = Planet.query.delete(planet_id)
     favorites_planet = Favorites(user_id=int(user_id), planet_id=int(planet_id))
     db.session.delete(favorites_planet)
-    db.session.delete()
+  #  db.session.delete()
     response_body = {"msg": "Planeta borrado a favoritos correctamente"}
     
     return jsonify(response_body), 200
@@ -211,10 +213,10 @@ def remove_favorites_planet(planet_id,user_id):
 
 @app.route('/favorites_people/<int:people_id>/<int:user_id>',methods=['DELETE'])
 def remove_favorites_people(people_id,user_id):
-    people_query = People.query.delete(people_id)
+   # people_query = People.query.delete(people_id)
     favorites_people = Favorites(user_id=int(user_id), people_id=int(people_id))
     db.session.delete(favorites_people)
-    db.session.delete()
+   # db.session.delete()
     response_body = {"msg": "Persona borrada a favoritos correctamente"}
     
     return jsonify(response_body), 200

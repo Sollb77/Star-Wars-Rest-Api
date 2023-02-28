@@ -61,7 +61,7 @@ class Favorites(db.Model):
     planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"), nullable=True)
 
     def __repr__(self):
-        return '<Favorites %r>' % self.name
+        return '<Favorites %r>' % self.id
 
     def serialize(self):
         return {
@@ -69,6 +69,6 @@ class Favorites(db.Model):
             "user_id": self.user_id,
             "people_id": self.people_id,
             "planet_id": self.planet_id,
-            "favorites_id": self.favorites_id,
+            
             # do not serialize the password, its a security breach
         }
