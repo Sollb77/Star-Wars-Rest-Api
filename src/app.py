@@ -196,7 +196,7 @@ def get_planeta(planet_id):
 
     return jsonify(planeta.serialize()), 200
   
-#[DELETE] /favorite/planet/<int:planet_id>
+# [DELETE] /favorite/planet/<int:planet_id>
 
 
 @app.route('/favorites_planet/<int:planet_id>/<int:user_id>',methods=['DELETE'])
@@ -204,24 +204,37 @@ def remove_favorites_planet(planet_id,user_id):
     #planet_query = Planet.query.delete(planet_id)
     favorites_planet = Favorites(user_id=int(user_id), planet_id=int(planet_id))
     db.session.delete(favorites_planet)
-  #  db.session.delete()
+#  db.session.delete()
     response_body = {"msg": "Planeta borrado a favoritos correctamente"}
     
     return jsonify(response_body), 200
 
 #[DELETE] /favorite/people/<int:people_id>
 
-@app.route('/favorites_people/<int:people_id>/<int:user_id>',methods=['DELETE'])
-def remove_favorites_people(people_id,user_id):
-   # people_query = People.query.delete(people_id)
-    favorites_people = Favorites(user_id=int(user_id), people_id=int(people_id))
-    db.session.delete(favorites_people)
-   # db.session.delete()
-    response_body = {"msg": "Persona borrada a favoritos correctamente"}
+#@app.route('/favorites_people/<int:people_id>/<int:user_id>',methods=['DELETE'])
+#def delete_favorites_people(people_id,user_id):
+    #people_query = Favorites.query.filter(Favorites.user_id == user_id, Favorites.people_id == people_id).first()
+    # favorites_people = Favorites(user_id=int(user_id), people_id=int(people_id))
     
-    return jsonify(response_body), 200
+    #if people_query != null:
+    #    favorites_delete = Favorites(user_id=int(user_id), people_id=int(people_id)
+    #    db.session.delete 
+   # db.session.delete()
+   # response_body = {"msg": "Persona borrada a favoritos correctamente"}
+    
+   #  return jsonify(response_body), 200
 
+@app.route('/favorites_people/<int:people_id>/<int:user_id>', methods=['DELETE'])
+def delete_favorites_people(people_id, user_id):
+    people_query = Favorites.query.filter(Favorites.user_id == user_id, Favorites.people_id ==people_id).first()
 
+    if people_query :
+        favorites_delete = Favorites(user_id=user_id, people_id=people_id)
+        db.session.delete(favorites_delete)
+        db.session.commit()
+        return jsonify({ "msg":"Favorito eliminado"}),200
+    else:
+        return jsonify({ "msg":"El favorito no existe"}),200
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
