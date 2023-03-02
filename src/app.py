@@ -251,6 +251,19 @@ def delete_favorites_persona(people_id):
     else:
         return jsonify({ "msg":"El favorito no existe"}),200
 
+@app.route('/favorites_planet/<int:planet_id>', methods=['DELETE'])
+@jwt_required()
+def delete_favorites_planeta(planet_id):
+    user_id = get_jwt_identity()
+    planet_query = Favorites.query.filter(Favorites.user_id == user_id, Favorites.planet_id == planet_id).first()
+    if planet_query :
+     #   favorites_delete = Favorites(planet_query)
+     #pasar unaquery al metodo DELETE
+        db.session.delete(planet_query)
+        db.session.commit()
+        return jsonify({ "msg":"Favorito eliminado"}),200
+    else:
+        return jsonify({ "msg":"El favorito no existe"}),200
 
 
 if __name__ == '__main__':
