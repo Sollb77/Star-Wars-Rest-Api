@@ -53,7 +53,7 @@ def login():
     if email != user.email or password != user.password:
         return jsonify({"msg": "Usuario o contrasena incorrecta"}), 401
 
-    access_token = create_access_token(identity=email)
+    access_token = create_access_token(identity=user.id)
     return jsonify(access_token=access_token)
 
 @app.route("/protected", methods=["GET"])
@@ -224,17 +224,34 @@ def remove_favorites_planet(planet_id,user_id):
     
    #  return jsonify(response_body), 200
 
-@app.route('/favorites_people/<int:people_id>/<int:user_id>', methods=['DELETE'])
-def delete_favorites_people(people_id, user_id):
-    people_query = Favorites.query.filter(Favorites.user_id == user_id, Favorites.people_id ==people_id).first()
+#@app.route('/favorites_people/<int:people_id>/<int:user_id>', methods=['DELETE'])
+#def delete_favorites_people(people_id, user_id):
+#    people_query = Favorites.query.filter(Favorites.user_id == user_id, Favorites.people_id ==people_id).first()
 
+#    if people_query :
+     #   favorites_delete = Favorites(people_query)
+     #pasar unaquery al metodo DELETE
+#        db.session.delete(people_query)
+#        db.session.commit()
+#        return jsonify({ "msg":"Favorito eliminado"}),200
+#    else:
+#        return jsonify({ "msg":"El favorito no existe"}),200
+
+@app.route('/favorites_people/<int:people_id>', methods=['DELETE'])
+@jwt_required()
+def delete_favorites_persona(people_id):
+    user_id = get_jwt_identity()
+    people_query = Favorites.query.filter(Favorites.user_id == user_id, Favorites.people_id ==people_id).first()
     if people_query :
-        favorites_delete = Favorites(user_id=user_id, people_id=people_id)
-        db.session.delete(favorites_delete)
+     #   favorites_delete = Favorites(people_query)
+     #pasar unaquery al metodo DELETE
+        db.session.delete(people_query)
         db.session.commit()
         return jsonify({ "msg":"Favorito eliminado"}),200
     else:
         return jsonify({ "msg":"El favorito no existe"}),200
+
+
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
