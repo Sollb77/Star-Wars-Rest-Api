@@ -103,11 +103,14 @@ def get_usuario(user_id):
 
 @app.route('/user/<int:user_id>/favorites',methods=['GET'])
 def get_favorites_user(user_id):
-    favorites_user = favorites.query.filter_by(user_id=user_id).all()
-    print(favorites_user.serialize())
-  
+    favorites_user = Favorites.query.filter_by(user_id=user_id).all()
+    #print(favorites_user.serialize())
+    list_of_user_favorite = list(map(lambda favorites: favorites.serialize(), favorites_user))
 
-    return jsonify(favorites_user.serialize()), 200
+    return jsonify(list_of_user_favorite), 200
+
+
+
 
 #Favoritos 
 
